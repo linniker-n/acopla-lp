@@ -1268,7 +1268,9 @@ if (lf1) {
     btn.disabled = true;
 
     const formData = new FormData(lf1);
-    const data = {
+
+    // Dados do lead — usados nos dois envios
+    const leadData = {
       nome:      formData.get('nome')      || '',
       cargo:     formData.get('cargo')     || '',
       municipio: formData.get('municipio') || '',
@@ -1276,36 +1278,37 @@ if (lf1) {
       email:     formData.get('email')     || '',
       mensagem:  formData.get('mensagem')  || '',
       origem:    'lp-prefeituras',
-      // Web3Forms fields
-      access_key: '41eb17e3-f4c9-4d42-b99d-099856ed4615',
-      subject:    'Novo lead LP Prefeituras — ACOPLA',
-      from_name:  'LP Prefeituras ACOPLA',
     };
 
     try {
       // Dispara os dois em paralelo
-      const [wixRes, w3Res] = await Promise.allSettled([
+      const [workerRes, w3Res] = await Promise.allSettled([
 
-        // 1. Wix HTTP Function → cria contato no CRM
-        fetch('https://www.acoplagestao.com.br/_functions/capturarLead', {
+        // 1. Cloudflare Worker → proxy para Wix CRM (resolve CORS)
+        fetch('https://damp-bush-bb83.design-linniker.workers.dev/', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(data),
+          body:    JSON.stringify(leadData),
         }),
 
         // 2. Web3Forms → notificação por e-mail
         fetch('https://api.web3forms.com/submit', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body:    JSON.stringify(data),
+          body:    JSON.stringify({
+            ...leadData,
+            access_key: '41eb17e3-f4c9-4d42-b99d-099856ed4615',
+            subject:    'Novo lead LP Prefeituras — ACOPLA',
+            from_name:  'LP Prefeituras ACOPLA',
+          }),
         }),
       ]);
 
       // Sucesso se pelo menos um dos dois funcionou
-      const wixOk = wixRes.status === 'fulfilled' && wixRes.value.ok;
-      const w3Ok  = w3Res.status  === 'fulfilled' && w3Res.value.ok;
+      const workerOk = workerRes.status === 'fulfilled' && workerRes.value.ok;
+      const w3Ok     = w3Res.status     === 'fulfilled' && w3Res.value.ok;
 
-      if (wixOk || w3Ok) {
+      if (workerOk || w3Ok) {
         lf1.style.display = 'none';
         document.getElementById('form-success-1').style.display = 'block';
       } else {
