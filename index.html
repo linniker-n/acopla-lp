@@ -484,63 +484,51 @@ footer strong{color:rgba(255,255,255,.38)}
 }
 
 /* ── FORMULÁRIO DE CAPTURA ── */
-/* ── FORMULÁRIO DE CAPTURA ── */
-.lp-form{
+/* ── IFRAME WIX FORM ── */
+.wix-iframe-wrap{
   margin-top:40px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:20px;
-  padding:40px 44px;
-  max-width:700px;
+  max-width:720px;
   margin-left:auto;margin-right:auto;
-  text-align:left;
-}
-.lf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.lf-row-single{grid-template-columns:1fr}
-.lf-group{display:flex;flex-direction:column;gap:6px}
-.lf-label{font-size:.74rem;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.04em}
-.lf-label span{color:var(--lime)}
-.lf-input{
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:10px;
-  padding:12px 16px;
-  font-size:.88rem;font-family:var(--font);
-  color:var(--white);
-  outline:none;
-  transition:border-color .2s,background .2s;
-}
-.lf-input::placeholder{color:rgba(255,255,255,.28)}
-.lf-input:focus{border-color:rgba(188,219,5,.5);background:rgba(255,255,255,.1)}
-.lf-textarea{resize:vertical;min-height:80px}
-.lf-footer{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.lf-btn{
-  background:var(--lime);color:var(--dark);
-  font-family:var(--font);font-weight:700;font-size:.95rem;
-  padding:16px 36px;border-radius:100px;border:none;cursor:pointer;
-  transition:transform .15s,box-shadow .2s,background .2s;
-  width:100%;max-width:380px;
-}
-.lf-btn:hover{background:#cde405;transform:translateY(-2px);box-shadow:0 12px 32px rgba(188,219,5,.3)}
-.lf-note{font-size:.72rem;color:rgba(255,255,255,.3);text-align:center}
-.lf-success{
-  margin-top:40px;max-width:480px;margin-left:auto;margin-right:auto;
-  text-align:center;padding:48px 32px;
-  background:rgba(255,255,255,.06);border:1px solid rgba(188,219,5,.25);
+  position:relative;
   border-radius:20px;
+  overflow:hidden;
+  /* altura mínima enquanto carrega */
+  min-height:580px;
 }
-.lf-success-icon{
-  width:56px;height:56px;border-radius:50%;
-  background:var(--lime);color:var(--dark);
-  font-size:1.4rem;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 20px;
+.wix-iframe-loader{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:14px;
+  color:rgba(255,255,255,.35);
+  font-size:.85rem;
+  pointer-events:none;
 }
-.lf-success h3{color:var(--white);font-size:1.3rem;font-weight:800;margin-bottom:10px}
-.lf-success p{color:rgba(255,255,255,.5);font-size:.9rem;line-height:1.7}
+.wix-iframe-spinner{
+  width:30px;height:30px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.1);
+  border-top-color:var(--lime);
+  animation:wix-spin .75s linear infinite;
+}
+@keyframes wix-spin{to{transform:rotate(360deg)}}
+.wix-iframe-wrap iframe{
+  width:100%;
+  border:none;
+  display:block;
+  min-height:580px;
+  opacity:0;
+  transition:opacity .4s ease;
+}
+.wix-iframe-wrap iframe.loaded{opacity:1}
+.wix-iframe-note{
+  margin-top:12px;
+  font-size:.72rem;
+  color:rgba(255,255,255,.25);
+  text-align:center;
+}
 @media(max-width:600px){
-  .lp-form{padding:28px 20px}
-  .lf-row{grid-template-columns:1fr}
+  .wix-iframe-wrap{min-height:680px}
+  .wix-iframe-wrap iframe{min-height:680px}
 }
 </style>
 
@@ -1097,50 +1085,28 @@ footer strong{color:rgba(255,255,255,.38)}
       <h2 class="cta-h2">Sua Prefeitura merece<br>uma gestão de tecnologia<br><span class="out">que funciona</span></h2>
       <p class="cta-p">Preencha o formulário. A ACOPLA entra em contato em até 1 dia útil para agendar um diagnóstico sem compromisso.</p>
 
-      <form class="lp-form" id="lp-form-1">
-        <div class="lf-row">
-          <div class="lf-group">
-            <label class="lf-label">Nome completo <span>*</span></label>
-            <input type="text" name="nome" placeholder="Seu nome" required class="lf-input">
-          </div>
-          <div class="lf-group">
-            <label class="lf-label">Cargo <span>*</span></label>
-            <input type="text" name="cargo" placeholder="Prefeito, Secretário, Gestor de TI…" required class="lf-input">
-          </div>
+      <div class="wix-iframe-wrap">
+        <div class="wix-iframe-loader" id="wix-loader">
+          <div class="wix-iframe-spinner"></div>
+          <span>Carregando formulário…</span>
         </div>
-        <div class="lf-row">
-          <div class="lf-group">
-            <label class="lf-label">Município <span>*</span></label>
-            <input type="text" name="municipio" placeholder="Nome da cidade e estado (ex: Matão – SP)" required class="lf-input">
-          </div>
-          <div class="lf-group">
-            <label class="lf-label">Telefone / WhatsApp <span>*</span></label>
-            <input type="tel" name="telefone" placeholder="(00) 00000-0000" required class="lf-input">
-          </div>
-        </div>
-        <div class="lf-row lf-row-single">
-          <div class="lf-group">
-            <label class="lf-label">E-mail institucional <span>*</span></label>
-            <input type="email" name="email" placeholder="seu@municipio.sp.gov.br" required class="lf-input">
-          </div>
-        </div>
-        <div class="lf-row lf-row-single">
-          <div class="lf-group">
-            <label class="lf-label">Como podemos ajudar?</label>
-            <textarea name="mensagem" rows="3" placeholder="Conte brevemente o principal desafio do seu Município com tecnologia ou telecom (opcional)." class="lf-input lf-textarea"></textarea>
-          </div>
-        </div>
-        <div class="lf-footer">
-          <button type="submit" class="lf-btn">Quero um diagnóstico gratuito ↗</button>
-          <p class="lf-note">Seus dados são tratados com sigilo. Sem spam, sem compromisso.</p>
-        </div>
-      </form>
-
-      <div id="form-success-1" class="lf-success" style="display:none">
-        <div class="lf-success-icon">✓</div>
-        <h3>Recebemos sua solicitação!</h3>
-        <p>Nossa equipe vai entrar em contato em até 1 dia útil. Fique de olho no seu e-mail e WhatsApp.</p>
+        <iframe
+          id="wix-form-iframe"
+          src="https://www.acoplagestao.com.br/form-lp-prefeituras"
+          title="Formulário de diagnóstico ACOPLA"
+          scrolling="no"
+          onload="
+            document.getElementById('wix-loader').style.display='none';
+            this.classList.add('loaded');
+            try{
+              var h=this.contentWindow.document.body.scrollHeight;
+              if(h>400){this.style.minHeight=h+'px';}
+            }catch(e){}
+          "
+        ></iframe>
       </div>
+      <p class="wix-iframe-note">Seus dados são tratados com sigilo. Sem spam, sem compromisso.</p>
+
     </div>
   </div>
 </section>
@@ -1257,84 +1223,7 @@ if (resSec) barObs.observe(resSec);
 
 // Scope grid — drag scroll removido
 
-// ── FORMULÁRIO — Duplo disparo: Wix CRM API + Web3Forms e-mail ───────────────
-const lf1 = document.getElementById('lp-form-1');
-if (lf1) {
-  lf1.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = lf1.querySelector('.lf-btn');
-    const originalText = btn.textContent;
-    btn.textContent = 'Enviando…';
-    btn.disabled = true;
-
-    const formData = new FormData(lf1);
-
-    const leadData = {
-      nome:      formData.get('nome')      || '',
-      cargo:     formData.get('cargo')     || '',
-      municipio: formData.get('municipio') || '',
-      telefone:  formData.get('telefone')  || '',
-      email:     formData.get('email')     || '',
-      mensagem:  formData.get('mensagem')  || '',
-      origem:    'lp-prefeituras',
-    };
-
-    console.log('📤 Enviando dados:', leadData);
-
-    try {
-      // 1. Cloudflare Worker → proxy para Wix CRM
-      let workerJson = null;
-      try {
-        const workerRes = await fetch('https://damp-bush-bb83.design-linniker.workers.dev/', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(leadData),
-        });
-        workerJson = await workerRes.json();
-        console.log('🔵 Worker status:', workerRes.status);
-        console.log('🔵 Worker resposta Wix:', JSON.stringify(workerJson));
-      } catch (workerErr) {
-        console.error('🔴 Worker erro:', workerErr.message);
-      }
-
-      // 2. Web3Forms → notificação por e-mail
-      let w3Ok = false;
-      try {
-        const w3Res = await fetch('https://api.web3forms.com/submit', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body:    JSON.stringify({
-            ...leadData,
-            access_key: '41eb17e3-f4c9-4d42-b99d-099856ed4615',
-            subject:    'Novo lead LP Prefeituras — ACOPLA',
-            from_name:  'LP Prefeituras ACOPLA',
-          }),
-        });
-        const w3Json = await w3Res.json();
-        w3Ok = w3Res.ok && w3Json.success;
-        console.log('🟢 Web3Forms resposta:', JSON.stringify(w3Json));
-      } catch (w3Err) {
-        console.error('🔴 Web3Forms erro:', w3Err.message);
-      }
-
-      const workerOk = workerJson && workerJson.success === true;
-      console.log('✅ Worker CRM ok?', workerOk, '| Web3Forms ok?', w3Ok);
-
-      if (workerOk || w3Ok) {
-        lf1.style.display = 'none';
-        document.getElementById('form-success-1').style.display = 'block';
-      } else {
-        throw new Error('Ambos os serviços falharam');
-      }
-
-    } catch (err) {
-      console.error('🔴 Erro geral:', err.message);
-      btn.textContent = originalText;
-      btn.disabled = false;
-      alert('Ocorreu um erro no envio. Tente novamente ou fale pelo WhatsApp.');
-    }
-  });
-}
+// ── SEM JS DE FORMULÁRIO — Wix Forms iframe gerencia tudo nativamente ──
 
 
 // FAQ ACCORDION
