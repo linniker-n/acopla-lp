@@ -484,6 +484,7 @@ footer strong{color:rgba(255,255,255,.38)}
 }
 
 /* ── FORMULÁRIO DE CAPTURA ── */
+/* ── FORMULÁRIO DE CAPTURA ── */
 .lp-form{
   margin-top:40px;
   background:rgba(255,255,255,.06);
@@ -1096,14 +1097,7 @@ footer strong{color:rgba(255,255,255,.38)}
       <h2 class="cta-h2">Sua Prefeitura merece<br>uma gestão de tecnologia<br><span class="out">que funciona</span></h2>
       <p class="cta-p">Preencha o formulário. A ACOPLA entra em contato em até 1 dia útil para agendar um diagnóstico sem compromisso.</p>
 
-      <form name="diagnostico-prefeituras" class="lp-form" id="lp-form-1">
-        <!-- Web3Forms: substitua o valor abaixo pela sua access_key gerada em web3forms.com -->
-        <input type="hidden" name="access_key" value="41eb17e3-f4c9-4d42-b99d-099856ed4615">
-        <input type="hidden" name="subject" value="Novo lead LP Prefeituras — ACOPLA">
-        <input type="hidden" name="from_name" value="LP Prefeituras ACOPLA">
-        <input type="hidden" name="redirect" value="https://www.acoplagestao.com.br/obrigado">
-        <input type="hidden" name="botcheck" style="display:none">
-
+      <form class="lp-form" id="lp-form-1">
         <div class="lf-row">
           <div class="lf-group">
             <label class="lf-label">Nome completo <span>*</span></label>
@@ -1114,7 +1108,6 @@ footer strong{color:rgba(255,255,255,.38)}
             <input type="text" name="cargo" placeholder="Prefeito, Secretário, Gestor de TI…" required class="lf-input">
           </div>
         </div>
-
         <div class="lf-row">
           <div class="lf-group">
             <label class="lf-label">Município <span>*</span></label>
@@ -1125,21 +1118,18 @@ footer strong{color:rgba(255,255,255,.38)}
             <input type="tel" name="telefone" placeholder="(00) 00000-0000" required class="lf-input">
           </div>
         </div>
-
         <div class="lf-row lf-row-single">
           <div class="lf-group">
             <label class="lf-label">E-mail institucional <span>*</span></label>
             <input type="email" name="email" placeholder="seu@municipio.sp.gov.br" required class="lf-input">
           </div>
         </div>
-
         <div class="lf-row lf-row-single">
           <div class="lf-group">
             <label class="lf-label">Como podemos ajudar?</label>
             <textarea name="mensagem" rows="3" placeholder="Conte brevemente o principal desafio do seu Município com tecnologia ou telecom (opcional)." class="lf-input lf-textarea"></textarea>
           </div>
         </div>
-
         <div class="lf-footer">
           <button type="submit" class="lf-btn">Quero um diagnóstico gratuito ↗</button>
           <p class="lf-note">Seus dados são tratados com sigilo. Sem spam, sem compromisso.</p>
@@ -1267,10 +1257,7 @@ if (resSec) barObs.observe(resSec);
 
 // Scope grid — drag scroll removido
 
-// ── FORMULÁRIO — Web3Forms + Wix CRM redirect ──────────────────────────────
-// Web3Forms envia o lead por e-mail.
-// O campo "redirect" no form aponta para uma página do Wix com formulário
-// oculto ou de agradecimento, centralizando o lead no CRM do Wix.
+// ── FORMULÁRIO — Duplo disparo: Wix CRM API + Web3Forms e-mail ───────────────
 const lf1 = document.getElementById('lp-form-1');
 if (lf1) {
   lf1.addEventListener('submit', async (e) => {
@@ -1280,33 +1267,51 @@ if (lf1) {
     btn.textContent = 'Enviando…';
     btn.disabled = true;
 
-    // Coleta os dados do formulário
     const formData = new FormData(lf1);
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
+    const data = {
+      nome:      formData.get('nome')      || '',
+      cargo:     formData.get('cargo')     || '',
+      municipio: formData.get('municipio') || '',
+      telefone:  formData.get('telefone')  || '',
+      email:     formData.get('email')     || '',
+      mensagem:  formData.get('mensagem')  || '',
+      origem:    'lp-prefeituras',
+      // Web3Forms fields
+      access_key: '41eb17e3-f4c9-4d42-b99d-099856ed4615',
+      subject:    'Novo lead LP Prefeituras — ACOPLA',
+      from_name:  'LP Prefeituras ACOPLA',
+    };
 
     try {
-      // 1. Envia para Web3Forms (notificação por e-mail)
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: json
-      });
-      const result = await res.json();
+      // Dispara os dois em paralelo
+      const [wixRes, w3Res] = await Promise.allSettled([
 
-      if (result.success) {
-        // 2. Mostra mensagem de sucesso na LP
+        // 1. Wix HTTP Function → cria contato no CRM
+        fetch('https://www.acoplagestao.com.br/_functions/capturarLead', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(data),
+        }),
+
+        // 2. Web3Forms → notificação por e-mail
+        fetch('https://api.web3forms.com/submit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body:    JSON.stringify(data),
+        }),
+      ]);
+
+      // Sucesso se pelo menos um dos dois funcionou
+      const wixOk = wixRes.status === 'fulfilled' && wixRes.value.ok;
+      const w3Ok  = w3Res.status  === 'fulfilled' && w3Res.value.ok;
+
+      if (wixOk || w3Ok) {
         lf1.style.display = 'none';
         document.getElementById('form-success-1').style.display = 'block';
-
-        // 3. Após 2s, redireciona para página de agradecimento no Wix
-        // (o Wix pode ter um formulário oculto ou pixel de conversão nessa página)
-        setTimeout(() => {
-          window.location.href = 'https://www.acoplagestao.com.br/obrigado';
-        }, 2000);
       } else {
-        throw new Error(result.message);
+        throw new Error('Ambos os serviços falharam');
       }
+
     } catch (err) {
       btn.textContent = originalText;
       btn.disabled = false;
@@ -1314,6 +1319,7 @@ if (lf1) {
     }
   });
 }
+
 
 // FAQ ACCORDION
 document.querySelectorAll('.fq-q').forEach(q => {
