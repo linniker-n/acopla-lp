@@ -1096,9 +1096,13 @@ footer strong{color:rgba(255,255,255,.38)}
       <h2 class="cta-h2">Sua Prefeitura merece<br>uma gestão de tecnologia<br><span class="out">que funciona</span></h2>
       <p class="cta-p">Preencha o formulário. A ACOPLA entra em contato em até 1 dia útil para agendar um diagnóstico sem compromisso.</p>
 
-      <form name="diagnostico-prefeituras" action="/" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="lp-form" id="lp-form-1">
-        <input type="hidden" name="form-name" value="diagnostico-prefeituras">
-        <p style="display:none"><label>Não preencha este campo: <input name="bot-field"></label></p>
+      <form name="diagnostico-prefeituras" class="lp-form" id="lp-form-1">
+        <!-- Web3Forms: substitua o valor abaixo pela sua access_key gerada em web3forms.com -->
+        <input type="hidden" name="access_key" value="COLE_SUA_ACCESS_KEY_AQUI">
+        <input type="hidden" name="subject" value="Novo lead LP Prefeituras — ACOPLA">
+        <input type="hidden" name="from_name" value="LP Prefeituras ACOPLA">
+        <input type="hidden" name="redirect" value="https://www.acoplagestao.com.br/obrigado">
+        <input type="hidden" name="botcheck" style="display:none">
 
         <div class="lf-row">
           <div class="lf-group">
@@ -1263,39 +1267,50 @@ if (resSec) barObs.observe(resSec);
 
 // Scope grid — drag scroll removido
 
-// FORMULÁRIO — submit via fetch (SPA-friendly para Netlify)
+// ── FORMULÁRIO — Web3Forms + Wix CRM redirect ──────────────────────────────
+// Web3Forms envia o lead por e-mail.
+// O campo "redirect" no form aponta para uma página do Wix com formulário
+// oculto ou de agradecimento, centralizando o lead no CRM do Wix.
 const lf1 = document.getElementById('lp-form-1');
 if (lf1) {
   lf1.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = lf1.querySelector('.lf-btn');
+    const originalText = btn.textContent;
     btn.textContent = 'Enviando…';
     btn.disabled = true;
-    // Verifica se está rodando localmente (file:// ou localhost)
-    const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (isLocal) {
-      // Em ambiente local, simula envio com sucesso
-      setTimeout(() => {
+
+    // Coleta os dados do formulário
+    const formData = new FormData(lf1);
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    try {
+      // 1. Envia para Web3Forms (notificação por e-mail)
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: json
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        // 2. Mostra mensagem de sucesso na LP
         lf1.style.display = 'none';
         document.getElementById('form-success-1').style.display = 'block';
-      }, 800);
-      return;
-    }
-    try {
-      const data = new FormData(lf1);
-      const encoded = new URLSearchParams();
-      data.forEach((value, key) => encoded.append(key, value));
-      await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encoded.toString()
-      });
-      lf1.style.display = 'none';
-      document.getElementById('form-success-1').style.display = 'block';
-    } catch {
-      btn.textContent = 'Quero um diagnóstico gratuito ↗';
+
+        // 3. Após 2s, redireciona para página de agradecimento no Wix
+        // (o Wix pode ter um formulário oculto ou pixel de conversão nessa página)
+        setTimeout(() => {
+          window.location.href = 'https://www.acoplagestao.com.br/obrigado';
+        }, 2000);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (err) {
+      btn.textContent = originalText;
       btn.disabled = false;
-      alert('Ocorreu um erro. Tente novamente ou entre em contato pelo WhatsApp.');
+      alert('Ocorreu um erro no envio. Tente novamente ou fale pelo WhatsApp.');
     }
   });
 }
