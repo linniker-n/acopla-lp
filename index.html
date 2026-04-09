@@ -1269,7 +1269,6 @@ if (lf1) {
 
     const formData = new FormData(lf1);
 
-    // Dados do lead — usados nos dois envios
     const leadData = {
       nome:      formData.get('nome')      || '',
       cargo:     formData.get('cargo')     || '',
@@ -1280,19 +1279,28 @@ if (lf1) {
       origem:    'lp-prefeituras',
     };
 
-    try {
-      // Dispara os dois em paralelo
-      const [workerRes, w3Res] = await Promise.allSettled([
+    console.log('📤 Enviando dados:', leadData);
 
-        // 1. Cloudflare Worker → proxy para Wix CRM (resolve CORS)
-        fetch('https://damp-bush-bb83.design-linniker.workers.dev/', {
+    try {
+      // 1. Cloudflare Worker → proxy para Wix CRM
+      let workerJson = null;
+      try {
+        const workerRes = await fetch('https://damp-bush-bb83.design-linniker.workers.dev/', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify(leadData),
-        }),
+        });
+        workerJson = await workerRes.json();
+        console.log('🔵 Worker status:', workerRes.status);
+        console.log('🔵 Worker resposta Wix:', JSON.stringify(workerJson));
+      } catch (workerErr) {
+        console.error('🔴 Worker erro:', workerErr.message);
+      }
 
-        // 2. Web3Forms → notificação por e-mail
-        fetch('https://api.web3forms.com/submit', {
+      // 2. Web3Forms → notificação por e-mail
+      let w3Ok = false;
+      try {
+        const w3Res = await fetch('https://api.web3forms.com/submit', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body:    JSON.stringify({
@@ -1301,12 +1309,16 @@ if (lf1) {
             subject:    'Novo lead LP Prefeituras — ACOPLA',
             from_name:  'LP Prefeituras ACOPLA',
           }),
-        }),
-      ]);
+        });
+        const w3Json = await w3Res.json();
+        w3Ok = w3Res.ok && w3Json.success;
+        console.log('🟢 Web3Forms resposta:', JSON.stringify(w3Json));
+      } catch (w3Err) {
+        console.error('🔴 Web3Forms erro:', w3Err.message);
+      }
 
-      // Sucesso se pelo menos um dos dois funcionou
-      const workerOk = workerRes.status === 'fulfilled' && workerRes.value.ok;
-      const w3Ok     = w3Res.status     === 'fulfilled' && w3Res.value.ok;
+      const workerOk = workerJson && workerJson.success === true;
+      console.log('✅ Worker CRM ok?', workerOk, '| Web3Forms ok?', w3Ok);
 
       if (workerOk || w3Ok) {
         lf1.style.display = 'none';
@@ -1316,6 +1328,7 @@ if (lf1) {
       }
 
     } catch (err) {
+      console.error('🔴 Erro geral:', err.message);
       btn.textContent = originalText;
       btn.disabled = false;
       alert('Ocorreu um erro no envio. Tente novamente ou fale pelo WhatsApp.');
