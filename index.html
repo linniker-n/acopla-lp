@@ -133,6 +133,13 @@ img,svg{display:block;max-width:100%}
 
 /* ===================== PAIN SECTION ===================== */
 #dor{background:var(--off)}
+.tem-band{background:var(--dark);padding:34px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(188,219,5,.12)}
+.tem-inner{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+.tem-kicker{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--lime);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px}
+.tem-title{font-family:var(--syne);font-size:clamp(1.45rem,2.4vw,2.1rem);font-weight:800;color:var(--white);letter-spacing:-.03em;line-height:1.08;margin-bottom:8px}
+.tem-text{font-size:.86rem;color:rgba(255,255,255,.48);line-height:1.75;max-width:760px}
+.tem-link{display:inline-flex;align-items:center;justify-content:center;background:var(--lime);color:var(--dark);border-radius:999px;padding:12px 22px;font-size:.8rem;font-weight:800;white-space:nowrap;transition:transform .22s,box-shadow .22s}
+.tem-link:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(188,219,5,.24)}
 .pain-head{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:end;margin-bottom:52px}
 .pain-right-text{font-size:.91rem;color:var(--muted);line-height:1.8}
 .pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -449,6 +456,7 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
   .cl-grid{grid-template-columns:1fr 1fr}
   .cl-bottom{grid-template-columns:1fr 1fr}
   .svc-grid{grid-template-columns:1fr}
+  .tem-inner{grid-template-columns:1fr}
   .cta-cards{grid-template-columns:1fr}
   footer{flex-direction:column;text-align:center}
   .ft-info{text-align:center}
@@ -708,6 +716,18 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
       </div>
       </div>
       </div>
+</section>
+
+<!-- TEM EVOLUTIVO -->
+<section class="tem-band" aria-labelledby="tem-title">
+  <div class="w tem-inner">
+    <div data-r="l">
+      <div class="tem-kicker">TEM evolutivo</div>
+      <h2 class="tem-title" id="tem-title">Muito além do TEM tradicional</h2>
+      <p class="tem-text">A ACOPLA atua no conceito evolutivo de TEM, integrando Telecom Expense Management e Technology Expense Management para conectar tecnologia, telecomunicações, contratos, custos, governança e eficiência operacional.</p>
+    </div>
+    <a href="#servicos" class="tem-link" data-r="r">Saiba mais</a>
+  </div>
 </section>
 
 <!-- DOR -->
