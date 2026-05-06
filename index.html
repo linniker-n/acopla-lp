@@ -133,13 +133,17 @@ img,svg{display:block;max-width:100%}
 
 /* ===================== PAIN SECTION ===================== */
 #dor{background:var(--off)}
-.tem-band{background:var(--dark);padding:34px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(188,219,5,.12)}
-.tem-inner{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
-.tem-kicker{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--lime);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px}
-.tem-title{font-family:var(--syne);font-size:clamp(1.45rem,2.4vw,2.1rem);font-weight:800;color:var(--white);letter-spacing:-.03em;line-height:1.08;margin-bottom:8px}
-.tem-text{font-size:.86rem;color:rgba(255,255,255,.48);line-height:1.75;max-width:760px}
-.tem-link{display:inline-flex;align-items:center;justify-content:center;background:var(--lime);color:var(--dark);border-radius:999px;padding:12px 22px;font-size:.8rem;font-weight:800;white-space:nowrap;transition:transform .22s,box-shadow .22s}
-.tem-link:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(188,219,5,.24)}
+.tem-band{background:linear-gradient(135deg,var(--green-xl) 0%,var(--dark) 54%,#152506 100%);padding:56px 0;border-top:1px solid rgba(188,219,5,.22);border-bottom:1px solid rgba(188,219,5,.22);position:relative;overflow:hidden}
+.tem-band::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(188,219,5,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(188,219,5,.045) 1px,transparent 1px);background-size:48px 48px;opacity:.8}
+.tem-band::after{content:'TEM';position:absolute;right:5%;top:50%;transform:translateY(-50%);font-family:var(--syne);font-size:clamp(5rem,14vw,11rem);font-weight:900;letter-spacing:-.08em;color:rgba(188,219,5,.055);line-height:1;pointer-events:none}
+.tem-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:36px;align-items:center}
+.tem-kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.66rem;font-weight:700;color:var(--lime);text-transform:uppercase;letter-spacing:.16em;margin-bottom:12px}
+.tem-kicker::before{content:'';width:26px;height:2px;background:var(--lime)}
+.tem-title{font-family:var(--syne);font-size:clamp(2rem,4vw,3.4rem);font-weight:900;color:var(--white);letter-spacing:-.045em;line-height:.98;margin-bottom:14px;text-wrap:balance}
+.tem-title span{color:var(--lime)}
+.tem-text{font-size:1rem;color:rgba(255,255,255,.62);line-height:1.72;max-width:840px}
+.tem-link{display:inline-flex;align-items:center;justify-content:center;background:var(--lime);color:var(--dark);border-radius:999px;padding:15px 28px;font-size:.86rem;font-weight:900;white-space:nowrap;box-shadow:0 16px 38px rgba(188,219,5,.22);transition:transform .22s,box-shadow .22s,background .22s}
+.tem-link:hover{background:#cde405;transform:translateY(-2px);box-shadow:0 20px 46px rgba(188,219,5,.32)}
 .pain-head{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:end;margin-bottom:52px}
 .pain-right-text{font-size:.91rem;color:var(--muted);line-height:1.8}
 .pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -723,7 +727,7 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
   <div class="w tem-inner">
     <div data-r="l">
       <div class="tem-kicker">TEM evolutivo</div>
-      <h2 class="tem-title" id="tem-title">Muito além do TEM tradicional</h2>
+      <h2 class="tem-title" id="tem-title">Muito além do <span>TEM tradicional</span></h2>
       <p class="tem-text">A ACOPLA atua no conceito evolutivo de TEM, integrando Telecom Expense Management e Technology Expense Management para conectar tecnologia, telecomunicações, contratos, custos, governança e eficiência operacional.</p>
     </div>
     <a href="#" class="tem-link" data-r="r">Saiba mais</a>
