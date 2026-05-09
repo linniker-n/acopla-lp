@@ -10,6 +10,11 @@
 <script>
   (function () {
     if (window.parent === window) return;
+    // Fix: hero usa 100vh que dentro do iframe = altura do iframe, travando em altura fixa
+    var fix = document.createElement('style');
+    fix.textContent = '#hero{min-height:680px!important}html,html::-webkit-scrollbar{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}';
+    document.head.appendChild(fix);
+    // Reporta altura real para o embed pai redimensionar
     function send() {
       window.parent.postMessage({ lpHeight: document.documentElement.scrollHeight }, '*');
     }
