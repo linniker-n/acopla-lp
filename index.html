@@ -7,7 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/acopla-lp.css">
-
+<script>
+  (function () {
+    if (window.parent === window) return;
+    function send() {
+      window.parent.postMessage({ lpHeight: document.documentElement.scrollHeight }, '*');
+    }
+    window.addEventListener('load', send);
+    window.addEventListener('resize', send);
+    if (window.ResizeObserver) {
+      new ResizeObserver(send).observe(document.body);
+    }
+  })();
+</script>
 </head>
 <body>
 <div id="sp"></div>
