@@ -489,51 +489,72 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
 
 /* ===================== MOBILE FIXES — scroll, form e alinhamento ===================== */
 
-/* Conter overflow de elementos com transform:translateX nas animações de reveal,
-   sem quebrar position:sticky do .gm-panel */
+/* Conter overflow das animações de reveal sem quebrar position:sticky do .gm-panel */
 section{overflow-x:clip}
 #hero,.tem-band,#contato{overflow:hidden}
 
-/* Padding da seção CTA reduzido para mobile */
+/* ---- 1024px: botão gm-panel e callout ---- */
 @media(max-width:1024px){
-  /* Botão do gm-panel: largura total para não ser cortado pelo overflow:hidden do painel */
   .gm-panel{padding:26px 22px}
   .gm-panel .btn{width:100%;justify-content:center;box-sizing:border-box}
-  /* Texto do callout de inteligência: garantir quebra de linha segura */
   .icl-text p,.icl-text strong{overflow-wrap:break-word;word-break:break-word}
   .intel-callout{padding:28px 22px}
 }
+
+/* ---- 768px: hero badge, comparativo empilhado, paddings ---- */
 @media(max-width:768px){
   #contato{padding:84px 0}
-  /* Iframe do formulário: altura extra para exibir todos os campos com conforto */
-  #wix-form-iframe{height:940px;min-height:940px}
-  /* Badge hero — texto longo: deixar quebrar linha sem deformar o pill */
   .hero-pre{border-radius:10px;white-space:normal;text-align:left}
-  /* Cards de comparação — label longo sem nobreak */
-  .hvc-label{white-space:normal}
-  /* Painel do diferencial e humanizado — espaçamento interno menor */
   .dif-card{padding:24px 20px}
   .hum-vis{padding:24px 20px}
+  /* Comparativo ACOPLA vs Plataformas:
+     empilha label acima do texto — muito mais legível em coluna única */
+  .hvc{flex-direction:column;gap:6px;padding:16px}
+  .hvc-label{white-space:normal;align-self:flex-start;font-size:.65rem}
+  .hvc p{font-size:.84rem;line-height:1.65}
 }
+
+/* ---- 580px: form sai do padding do .w para usar largura total do viewport ---- */
+@media(max-width:580px){
+  /* margin negativa compensa o padding de 5% do container .w,
+     dando ao iframe a largura total da tela */
+  .cta-form-wrap{
+    margin-left:-5vw;
+    margin-right:-5vw;
+    width:auto;
+    max-width:none;
+    border-radius:0;
+  }
+  #wix-form-iframe{
+    border-radius:0;
+    width:100%;
+    height:940px;
+    min-height:940px;
+  }
+  /* Callout de métricas: reduz gap e fonte para caber em telas estreitas */
+  .intel-callout{overflow:hidden;padding:20px 16px}
+  .icl-metrics{gap:10px}
+  .icl-m{padding:14px 12px}
+  .icl-val{font-size:1.8rem}
+  .icl-val span{font-size:1.2rem}
+  .icl-val-sm{font-size:.95rem}
+}
+
+/* ---- 480px: ajustes finos de padding e tamanho ---- */
 @media(max-width:480px){
   #contato{padding:60px 0}
-  /* Logos da marca no hero: reduzir gap e padding em telas muito pequenas */
   .brand-pair{padding:10px 12px;gap:8px}
   .brand-pair img{height:30px}
   .brand-pair img.logo-acp{height:24px}
-  /* Highlight da seção dor: padding horizontal menor */
   .pain-highlight{padding:22px 16px}
-  /* Callout de inteligência */
-  .intel-callout{padding:22px 14px}
-  /* Card de success fee */
   .fee-vis{padding:24px 18px}
-  /* Scope box */
   .scope-box{padding:18px 14px}
-  /* Tag de passo — pode quebrar linha */
   .cs-tag{white-space:normal;line-height:1.5}
-  /* Nav logo menor */
   .nav-logo img{height:24px}
   .nav-logo img.logo-acp{height:20px}
-  /* Formulário: mais altura ainda em telas menores */
+  /* Métricas ainda menores em telas muito pequenas */
+  .icl-val{font-size:1.55rem}
+  .icl-m{padding:12px 10px}
+  .icl-metrics{gap:8px}
   #wix-form-iframe{height:980px;min-height:980px}
 }
