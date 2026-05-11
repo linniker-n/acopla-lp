@@ -10,7 +10,7 @@
   --r:12px; --r2:20px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}
+html{scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;overflow-x:hidden}
 html::-webkit-scrollbar{display:none}
 body{font-family:var(--body);background:var(--white);color:var(--text);overflow-x:hidden;line-height:1.65}
 a{text-decoration:none;color:inherit}
@@ -414,12 +414,12 @@ img,svg{display:block;max-width:100%}
 .cf-privacy{text-align:center;font-size:.69rem;color:rgba(255,255,255,.2);margin-top:16px;letter-spacing:.01em}
 .form-hint{max-width:1040px;margin:0 auto 12px;text-align:center;font-size:.76rem;color:rgba(255,255,255,.42);line-height:1.5}
 @media(max-width:1120px){
-  .cta-form-wrap{max-width:calc(100vw - 40px);overflow:hidden}
+  .cta-form-wrap{max-width:100%;overflow:hidden}
   #wix-form-iframe{width:100%;max-width:100%;height:720px;min-height:720px}
 }
 @media(max-width:580px){
-  .cta-form-wrap{max-width:calc(100vw - 28px);border-radius:14px}
-  #wix-form-iframe{height:760px;min-height:760px;border-radius:14px}
+  .cta-form-wrap{max-width:100%;border-radius:14px}
+  #wix-form-iframe{height:820px;min-height:820px;border-radius:14px}
 }
 
 /* FOOTER */
@@ -485,4 +485,43 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
   .gm-list{grid-template-columns:1fr}
   .float-wa{right:14px;bottom:14px;width:52px;height:52px}
   .float-wa svg{width:27px;height:27px}
+}
+
+/* ===================== MOBILE FIXES — scroll, form e alinhamento ===================== */
+
+/* Conter overflow de elementos com transform:translateX nas animações de reveal,
+   sem quebrar position:sticky do .gm-panel */
+section{overflow-x:clip}
+#hero,.tem-band,#contato{overflow:hidden}
+
+/* Padding da seção CTA reduzido para mobile */
+@media(max-width:768px){
+  #contato{padding:84px 0}
+  /* Badge hero — texto longo: deixar quebrar linha sem deformar o pill */
+  .hero-pre{border-radius:10px;white-space:normal;text-align:left}
+  /* Cards de comparação — label longo sem nobreak */
+  .hvc-label{white-space:normal}
+  /* Painel do diferencial e humanizado — espaçamento interno menor */
+  .dif-card{padding:24px 20px}
+  .hum-vis{padding:24px 20px}
+}
+@media(max-width:480px){
+  #contato{padding:60px 0}
+  /* Logos da marca no hero: reduzir gap e padding em telas muito pequenas */
+  .brand-pair{padding:10px 12px;gap:8px}
+  .brand-pair img{height:30px}
+  .brand-pair img.logo-acp{height:24px}
+  /* Highlight da seção dor: padding horizontal menor */
+  .pain-highlight{padding:22px 16px}
+  /* Callout de inteligência */
+  .intel-callout{padding:24px 16px}
+  /* Card de success fee */
+  .fee-vis{padding:24px 18px}
+  /* Scope box */
+  .scope-box{padding:18px 14px}
+  /* Tag de passo — pode quebrar linha */
+  .cs-tag{white-space:normal;line-height:1.5}
+  /* Nav logo menor */
+  .nav-logo img{height:24px}
+  .nav-logo img.logo-acp{height:20px}
 }
