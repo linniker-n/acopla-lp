@@ -495,8 +495,18 @@ section{overflow-x:clip}
 #hero,.tem-band,#contato{overflow:hidden}
 
 /* Padding da seção CTA reduzido para mobile */
+@media(max-width:1024px){
+  /* Botão do gm-panel: largura total para não ser cortado pelo overflow:hidden do painel */
+  .gm-panel{padding:26px 22px}
+  .gm-panel .btn{width:100%;justify-content:center;box-sizing:border-box}
+  /* Texto do callout de inteligência: garantir quebra de linha segura */
+  .icl-text p,.icl-text strong{overflow-wrap:break-word;word-break:break-word}
+  .intel-callout{padding:28px 22px}
+}
 @media(max-width:768px){
   #contato{padding:84px 0}
+  /* Iframe do formulário: altura extra para exibir todos os campos com conforto */
+  #wix-form-iframe{height:940px;min-height:940px}
   /* Badge hero — texto longo: deixar quebrar linha sem deformar o pill */
   .hero-pre{border-radius:10px;white-space:normal;text-align:left}
   /* Cards de comparação — label longo sem nobreak */
@@ -514,7 +524,7 @@ section{overflow-x:clip}
   /* Highlight da seção dor: padding horizontal menor */
   .pain-highlight{padding:22px 16px}
   /* Callout de inteligência */
-  .intel-callout{padding:24px 16px}
+  .intel-callout{padding:22px 14px}
   /* Card de success fee */
   .fee-vis{padding:24px 18px}
   /* Scope box */
@@ -524,4 +534,6 @@ section{overflow-x:clip}
   /* Nav logo menor */
   .nav-logo img{height:24px}
   .nav-logo img.logo-acp{height:20px}
+  /* Formulário: mais altura ainda em telas menores */
+  #wix-form-iframe{height:980px;min-height:980px}
 }
