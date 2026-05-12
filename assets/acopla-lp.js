@@ -84,6 +84,76 @@ window.addEventListener('message', function(e) {
   }
 });
 
+// WHATSAPP EM EMBED MOBILE
+// Se a LP estiver dentro de um iframe alto, position:fixed fica preso ao iframe.
+// Quando o parent é acessível, reposicionamos o botão em relação ao viewport real.
+function initEmbedFloatingWhatsapp() {
+  const button = document.querySelector('.float-wa');
+  if (!button || window.parent === window) return;
+
+  let parentWindow;
+  let frame;
+  try {
+    parentWindow = window.parent;
+    frame = window.frameElement;
+    if (!parentWindow || !frame) return;
+    void parentWindow.innerHeight;
+    void frame.getBoundingClientRect();
+  } catch (err) {
+    return;
+  }
+
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+
+    try {
+      const rect = frame.getBoundingClientRect();
+      const visualViewport = parentWindow.visualViewport;
+      const viewportHeight = visualViewport ? visualViewport.height : parentWindow.innerHeight;
+      const viewportTop = visualViewport ? visualViewport.offsetTop : 0;
+      const margin = Math.max(14, parseFloat(getComputedStyle(button).right) || 14);
+      const buttonHeight = button.offsetHeight || 52;
+      const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+      const desiredTop = viewportTop - rect.top + viewportHeight - buttonHeight - margin;
+      const maxTop = Math.max(margin, documentHeight - buttonHeight - margin);
+      const nextTop = Math.min(Math.max(margin, desiredTop), maxTop);
+
+      button.classList.add('is-embed-fixed');
+      button.style.setProperty('--float-wa-top', nextTop + 'px');
+    } catch (err) {
+      button.classList.remove('is-embed-fixed');
+      button.style.removeProperty('--float-wa-top');
+    }
+  };
+
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(update);
+  };
+
+  const listen = (target, eventName) => {
+    try {
+      target.addEventListener(eventName, schedule, { passive: true });
+    } catch (err) {}
+  };
+
+  listen(parentWindow, 'scroll');
+  listen(parentWindow, 'resize');
+  listen(window, 'resize');
+  listen(window, 'load');
+  if (parentWindow.visualViewport) {
+    listen(parentWindow.visualViewport, 'resize');
+    listen(parentWindow.visualViewport, 'scroll');
+  }
+  if (window.ResizeObserver) {
+    new ResizeObserver(schedule).observe(document.body);
+  }
+
+  schedule();
+}
+
+initEmbedFloatingWhatsapp();
+
 document.querySelectorAll('.fq-q').forEach(q => {
   q.addEventListener('click', () => {
     const item = q.parentElement;

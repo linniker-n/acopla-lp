@@ -1,6 +1,6 @@
 const ACOPLA_LP_STYLES = String.raw`@import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
-:host{display:block;width:100%;font-family:var(--body);background:var(--white);color:var(--text);line-height:1.65}
-.acopla-lp-root{font-family:var(--body);background:var(--white);color:var(--text);overflow-x:hidden;line-height:1.65}
+:host{--green:#00602a;--green-d:#004d22;--green-xl:#003318;--lime:#bcdb05;--lime-d:#a3bf04;--lime-l:rgba(188,219,5,.12);--white:#ffffff;--off:#f5f4ef;--off2:#eeece3;--dark:#080f06;--dark2:#0d1a09;--dark3:#111e0d;--text:#0f1a0b;--muted:#6b6b5c;--border:#e0ddd2;--amber:#d97706;--syne:'Cabinet Grotesk',sans-serif;--body:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:12px;--r2:20px;display:block;width:100%;font-family:var(--body);background:var(--dark);color:var(--text);line-height:1.65}
+.acopla-lp-root{font-family:var(--body);background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.65}
 :root {
   --green:#00602a; --green-d:#004d22; --green-xl:#003318;
   --lime:#bcdb05; --lime-d:#a3bf04; --lime-l:rgba(188,219,5,.12);
@@ -13,7 +13,7 @@ const ACOPLA_LP_STYLES = String.raw`@import url('https://fonts.googleapis.com/cs
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--white);color:var(--text);overflow-x:hidden;line-height:1.65}
+body{font-family:var(--body);background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.65}
 a{text-decoration:none;color:inherit}
 img,svg{display:block;max-width:100%}
 
@@ -424,14 +424,15 @@ img,svg{display:block;max-width:100%}
 }
 
 /* FOOTER */
-footer{background:var(--dark);border-top:1px solid rgba(255,255,255,.05);padding:28px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+footer{background:var(--dark);border-top:1px solid rgba(255,255,255,.05);padding:28px 5%;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
 .ft-brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .ft-brand img{height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);opacity:.62}
 .ft-brand img.logo-acp{height:32px}
 .ft-brand span{width:1px;height:34px;background:rgba(255,255,255,.14)}
 .ft-info{max-width:760px;text-align:right}
 footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
-.float-wa{position:fixed;right:22px;bottom:22px;z-index:320;display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;background:#25d366;color:#fff;border-radius:999px;box-shadow:0 14px 34px rgba(37,211,102,.32);transition:transform .22s,box-shadow .22s}
+.float-wa{position:fixed;right:22px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:320;display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;background:#25d366;color:#fff;border-radius:999px;box-shadow:0 14px 34px rgba(37,211,102,.32);transition:transform .22s,box-shadow .22s}
+.float-wa.is-embed-fixed{position:absolute;top:var(--float-wa-top,22px);bottom:auto}
 .float-wa svg{width:30px;height:30px;display:block;fill:currentColor}
 .float-wa:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(37,211,102,.34)}
 .float-wa:active{transform:translateY(0)}
@@ -484,7 +485,7 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.28);line-height:1.65}
   .cta-btns .btn,.cta-btns .btn-ow{width:100%;max-width:320px;justify-content:center}
   .pain-highlight{flex-direction:column;gap:16px}
   .gm-list{grid-template-columns:1fr}
-  .float-wa{right:14px;bottom:14px;width:52px;height:52px}
+  .float-wa{right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:52px;height:52px}
   .float-wa svg{width:27px;height:27px}
 }`;
 const ACOPLA_LP_MARKUP = String.raw`<div id="sp"></div>
@@ -1498,6 +1499,7 @@ class AcoplaLandingPage extends HTMLElement {
     this.initBars();
     this.initWixFormHeight();
     this.initFaq();
+    this.initFloatingWhatsapp();
   }
 
   disconnectedCallback() {
@@ -1659,6 +1661,74 @@ class AcoplaLandingPage extends HTMLElement {
         }
       });
     });
+  }
+
+  initFloatingWhatsapp() {
+    const button = this.$('.float-wa');
+    if (!button || window.parent === window) return;
+
+    let parentWindow;
+    let frame;
+    try {
+      parentWindow = window.parent;
+      frame = window.frameElement;
+      if (!parentWindow || !frame) return;
+      void parentWindow.innerHeight;
+      void frame.getBoundingClientRect();
+    } catch (err) {
+      return;
+    }
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+
+      try {
+        const rect = frame.getBoundingClientRect();
+        const visualViewport = parentWindow.visualViewport;
+        const viewportHeight = visualViewport ? visualViewport.height : parentWindow.innerHeight;
+        const viewportTop = visualViewport ? visualViewport.offsetTop : 0;
+        const margin = Math.max(14, parseFloat(getComputedStyle(button).right) || 14);
+        const buttonHeight = button.offsetHeight || 52;
+        const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+        const desiredTop = viewportTop - rect.top + viewportHeight - buttonHeight - margin;
+        const maxTop = Math.max(margin, documentHeight - buttonHeight - margin);
+        const nextTop = Math.min(Math.max(margin, desiredTop), maxTop);
+
+        button.classList.add('is-embed-fixed');
+        button.style.setProperty('--float-wa-top', nextTop + 'px');
+      } catch (err) {
+        button.classList.remove('is-embed-fixed');
+        button.style.removeProperty('--float-wa-top');
+      }
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    const listen = (target, eventName) => {
+      try {
+        target.addEventListener(eventName, schedule, { passive: true });
+        this._observers.push({ disconnect: () => target.removeEventListener(eventName, schedule) });
+      } catch (err) {}
+    };
+
+    listen(parentWindow, 'scroll');
+    listen(parentWindow, 'resize');
+    listen(window, 'resize');
+    listen(window, 'load');
+    if (parentWindow.visualViewport) {
+      listen(parentWindow.visualViewport, 'resize');
+      listen(parentWindow.visualViewport, 'scroll');
+    }
+    if (window.ResizeObserver) {
+      const resizeObserver = new ResizeObserver(schedule);
+      resizeObserver.observe(document.body);
+      this._observers.push(resizeObserver);
+    }
+
+    schedule();
   }
 }
 
